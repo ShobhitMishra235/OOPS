@@ -48,6 +48,29 @@ public class ImplementationOfArrayListUsingGenericClass {
 }
 
 /* 
+Think of the difference:
+
+T[] arr
+  ↑
+just declaring/receiving a reference  (For this refer to ImplementationOfArrayListUsingGenericClass2.java)     ✅
+
+
+new T[5]
+  ↑
+creating an array of T                    ❌
+
+And your actual flow is:
+
+Integer[] arr = {1, 6, 7};
+          ↓
+       already created
+          ↓
+   printArray(arr)
+          ↓
+      T = Integer
+          ↓
+    T[] = Integer[]
+
 
 Type	Kind	Default value
 int	primitive	0
