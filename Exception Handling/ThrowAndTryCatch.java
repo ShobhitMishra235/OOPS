@@ -1,4 +1,4 @@
-public class ThrowAndThows {
+public class ThrowAndTryCatch {
     public static void main(String[] args) {
         try {
             checkEligibility(-1);
