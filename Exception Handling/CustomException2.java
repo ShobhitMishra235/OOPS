@@ -2,7 +2,8 @@ public class CustomException2 {
     public static void main(String[] args) {
         try {
             checkEligibility(-5);
-        } catch (IllegalAgeException e) {
+        } 
+        catch (IllegalAgeException e) {
             System.out.println(e.getMessage());
             System.out.println("Invalid age: " + e.getAge());
         }
