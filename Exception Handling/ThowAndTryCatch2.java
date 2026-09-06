@@ -18,3 +18,11 @@ public class ThowAndTryCatch2 {
     }
 }
 
+
+
+// Catching an exception inside the same method is not generally preferred
+// when the caller is better suited to decide how to handle it.
+// The method should throw the exception and let the caller handle it.
+// However, if the method itself knows how to properly handle/recover from
+// the exception, catching it inside the method is perfectly valid.
+// To handle this you can see the code ThrowAndTryCatch3.java which is a better approach to handle the exception.
