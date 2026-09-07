@@ -8,7 +8,7 @@ public class AllRunTime {
     }
     public static void main(String[] args) {
         try {
-            withdraw(5000, 7000)
+            withdraw(5000, 7000);
         }
         catch (IllegalStateException e) {
             System.out.println(e.getMessage());
