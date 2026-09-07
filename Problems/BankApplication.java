@@ -1,3 +1,25 @@
+/*
+
+Question 2 — Bank Account 
+Develop a simple banking application. 
+Create a BankAccount class containing: 
+ accountNumber 
+ accountHolderName 
+ balance 
+The balance must not be directly accessible or modifiable from outside the class. 
+Implement the following methods: 
+deposit(amount) 
+withdraw(amount) 
+getBalance() 
+Apply these rules: 
+ Deposit amount must be greater than 0. 
+ Withdrawal amount must not exceed the current balance. 
+ Invalid operations should display an appropriate message. 
+Task 
+Implement the class using proper encapsulation and demonstrate its use. 
+OOP Concepts: Encapsulation, Access Modifiers, Data Validation  
+
+*/
 class BankAccount1 {
 
     private double balance;
