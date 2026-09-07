@@ -7,7 +7,7 @@ public class TryAndCatch2 {
         arr.add(15);
 
         try {
-            int x = 2 / 0;
+            int x = 5 / 0;
             System.out.println(arr.get(5));
         }
         catch (ArithmeticException e) {
