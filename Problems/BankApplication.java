@@ -20,6 +20,7 @@ Implement the class using proper encapsulation and demonstrate its use.
 OOP Concepts: Encapsulation, Access Modifiers, Data Validation  
 
 */
+
 class BankAccount1 {
 
     private double balance;
