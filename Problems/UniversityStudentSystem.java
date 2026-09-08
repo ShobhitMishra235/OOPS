@@ -1,3 +1,24 @@
+/*
+
+Question 5 — University Student System 
+A university has thousands of students. 
+Each student has: 
+ Student ID 
+ Name 
+ Course 
+The university name is common to every student. 
+The university also wants to automatically generate a unique student ID whenever a new student is 
+created. 
+Task 
+Design the Student class such that: 
+1. University name is shared by all students. 
+2. Student count is maintained globally. 
+3. Each student receives a unique ID. 
+4. Student count can be accessed without creating a separate Student object. 
+Demonstrate the system by creating multiple students. 
+OOP Concepts: static Variable, static Method, Constructor  
+
+*/
 class Student1 {
     static String universityName = "Global University";
     static int studentCount = 0;
