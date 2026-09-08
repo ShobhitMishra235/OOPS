@@ -1,3 +1,24 @@
+/*
+
+Question 3 — E-Commerce Payment System 
+An e-commerce application supports multiple payment methods: 
+ Credit Card 
+ UPI 
+ PayPal 
+Create a common Payment type with a method: 
+pay(amount) 
+Each payment method should provide its own implementation. 
+The checkout system should be able to work with a common Payment reference without knowing the 
+actual payment implementation. 
+Task 
+Write a Java program demonstrating this design. 
+For example, the following should be possible: 
+Payment payment = new CreditCardPayment(); 
+payment.pay(5000); 
+payment = new UPIPayment(); 
+payment.pay(2500); 
+
+*/
 interface Payment {
     void pay(double amount);
 }

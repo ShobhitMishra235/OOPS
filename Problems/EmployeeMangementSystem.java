@@ -20,12 +20,12 @@ OOP Concepts: Inheritance, Method Overriding
 
 */
 
-abstract class Employee {
+abstract class Employee1 {
     protected String name;
     protected int employeeId;
     protected double salary;
 
-    public Employee(String name, int employeeId, double salary) {
+    public Employee1(String name, int employeeId, double salary) {
         this.name = name;
         this.employeeId = employeeId;
         this.salary = salary;
@@ -33,7 +33,7 @@ abstract class Employee {
 
     public abstract void displayDetails();
 }
-class Developer extends Employee {
+class Developer extends Employee1 {
     public Developer(String name, int employeeId, double salary) {
         super(name, employeeId, salary);
     }
@@ -45,7 +45,7 @@ class Developer extends Employee {
         System.out.println("Salary: " + salary);
     }
 }
-class Manager extends Employee {
+class Manager extends Employee1 {
     public Manager(String name, int employeeId, double salary) {
         super(name, employeeId, salary);
     }
@@ -57,7 +57,7 @@ class Manager extends Employee {
         System.out.println("Salary: " + salary);
     }
 }
-class Tester extends Employee {
+class Tester extends Employee1 {
     public Tester(String name, int employeeId, double salary) {
         super(name, employeeId, salary);
     }
