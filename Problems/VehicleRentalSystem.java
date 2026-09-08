@@ -1,8 +1,31 @@
+/*
+
+Question 4 — Vehicle Rental System 
+Create a vehicle rental system for a company that rents: 
+ Cars 
+ Bikes 
+ Trucks 
+Create an abstract class: 
+Vehicle 
+It should contain common information such as: 
+ Registration number 
+ Brand 
+ Rental price 
+Declare an abstract method: 
+calculateRentalCost(days) 
+Each vehicle type should calculate its rental cost differently. 
+Task 
+1. Create the abstract class. 
+2. Create the required subclasses. 
+3. Implement calculateRentalCost(). 
+4. Demonstrate runtime polymorphism.
+
+*/
 abstract class Vehicle {
     protected int registrationNumber;
     protected String brand;
     protected int rentPricePerDay;
-    abstract void calculateRentalCost();
+    abstract void calculateRentalCost(int days);
 }
 
 class car extends Vehicle {
@@ -11,6 +34,7 @@ class car extends Vehicle {
         this.brand = brand;
         this.rentPricePerDay = rentPricePerDay;
     }
+    @Override
     public void calculateRentalCost(int days) {
         int totalCost = this.rentPricePerDay * days;
         System.out.println("Total rental cost for " + days + " days: ₹" + totalCost);
@@ -23,6 +47,8 @@ class bike extends Vehicle {
         this.brand = brand;
         this.rentPricePerDay = rentPricePerDay;
     }
+
+    @Override 
     public void calculateRentalCost(int days) {
         int totalCost = this.rentPricePerDay * days;
         System.out.println("Total rental cost for " + days + " days: ₹" + totalCost);
@@ -35,6 +61,8 @@ class truck extends Vehicle {
         this.brand = brand;
         this.rentPricePerDay = rentPricePerDay;
     }
+
+    @Override 
     public void calculateRentalCost(int days) {
         int totalCost = this.rentPricePerDay * days;
         System.out.println("Total rental cost for " + days + " days: ₹" + totalCost);
@@ -43,13 +71,13 @@ class truck extends Vehicle {
 
 public class VehicleRentalSystem {
     public static void main(String[] args) {
-        car myCar = new car(1234, "Toyota", 2000);
+        Vehicle myCar = new car(1234, "Toyota", 2000);
         myCar.calculateRentalCost(3);
 
-        bike myBike = new bike(5678, "Honda", 1000);
+        Vehicle myBike = new bike(5678, "Honda", 1000);
         myBike.calculateRentalCost(5);
 
-        truck myTruck = new truck(9101, "Ford", 3000);
+        Vehicle myTruck = new truck(9101, "Ford", 3000);
         myTruck.calculateRentalCost(2);
     }
 }
