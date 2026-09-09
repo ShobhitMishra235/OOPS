@@ -1,4 +1,0 @@
-Employee Number: 7
-Employee Name: Shobhit
-Employee Basic Salary: 500000
-Department: IT

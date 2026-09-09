@@ -67,7 +67,7 @@ public class Question12 {
 
         // Writing data into file
         try {
-            FileWriter fw = new FileWriter("emp.txt");
+            FileWriter fw = new FileWriter("C:/Files of oops/emp.txt");
 
             fw.write("Employee Number: " + emp.getEmpNo() + "\n");
             fw.write("Employee Name: " + emp.getEmpName() + "\n");
