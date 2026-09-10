@@ -1,0 +1,47 @@
+Q.). If Dog is a subclass of Animal, can a generic type containing Dog be treated as a generic type containing Animal?
+
+Dog extends Animal
+
+you cannot assume:
+
+List<Dog> is a List<Animal>
+
+The example then demonstrates why this is necessary.
+
+Suppose you had:
+
+List<Dog> dogs = new ArrayList<>();
+
+If Java allowed:
+
+List<Animal> animals = dogs;   // ❌
+
+then you could use the Animal reference to add any Animal:
+
+animals.add(new Cat());
+
+Now the original List<Dog> would contain a Cat.
+
+Then if you tried:
+
+for (Dog d : dogs) {
+    d.bark();
+}
+
+the loop expects every element to be a Dog, but one element could be a Cat.
+
+So your teacher's main message is:
+Dog is a subtype of Animal
+        ↓
+BUT
+List<Dog> is NOT a subtype of List<Animal>
+
+And the iteration example is being used to prove why.
+
+The important thing is not "Dog cannot use Animal."
+
+Dog absolutely can use Animal's members.
+
+The point is:
+
+A collection of Dogs cannot safely be treated as a collection of Animals because an Animal collection is allowed to contain things that are not Dogs.

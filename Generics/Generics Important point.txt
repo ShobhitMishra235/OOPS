@@ -1,0 +1,105 @@
+What does new Dog[3] do?
+
+It creates one array object with 3 spaces.
+
+It does NOT create 3 Dog objects.
+
+Initially:
+
+dogs
+  ↓
+┌─────┬─────┬─────┐
+│ null│ null│ null │
+└─────┴─────┴─────┘
+   0     1     2
+
+So your statement is 100% correct:
+
+"I never created an object for every index."
+
+You didn't. Every index initially contains null.
+
+Then suppose:
+Animal[] animals = dogs;
+
+This is allowed because Dog[] is a subtype of Animal[].
+
+Now both references point to the same array:
+
+dogs ───────┐
+            ↓
+       ┌──────┬──────┬──────┐
+       │ null │ null │ null │
+       └──────┴──────┴──────┘
+            ↑
+animals ────┘
+
+Still, there are no Dog objects inside the array yet.
+
+Now the dangerous line:
+animals[0] = new Animal();
+
+You created one Animal object:
+
+                    Animal object
+                         ↑
+                         │
+dogs ───────┐            │
+            ↓            │
+       ┌────────┬──────┬──────┐
+       │   X    │ null │ null │
+       └────────┴──────┴──────┘
+            0
+animals ────┘
+
+But the actual array was created as:
+
+new Dog[3]
+
+So the array says:
+
+"I can only store Dog objects."
+
+You're trying to put:
+
+new Animal()
+
+inside it.
+
+Therefore Java throws:
+
+ArrayStoreException
+
+at runtime.
+
+This is different from your previous List example
+
+With arrays:
+
+Dog[] dogs = new Dog[3];
+Animal[] animals = dogs;   // ✅ allowed
+
+Java allows it because arrays are covariant.
+
+But:
+
+animals[0] = new Animal(); // ❌ runtime ArrayStoreException
+
+With generics:
+
+List<Dog> dogs = new ArrayList<>();
+List<Animal> animals = dogs; // ❌ compile-time error
+
+Java prevents it beforehand because generic types are invariant.
+
+And one more important point
+
+If you do:
+
+dogs[0] = new Dog();
+
+then you have actually created a Dog object:
+
+dogs[0] = new Dog();
+
+The array itself does not create Dog objects for each index.

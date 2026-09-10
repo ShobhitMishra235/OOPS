@@ -14,6 +14,7 @@ public class UpcastingAndDowncasting {
         System.out.println(s2);
 
         Object obj3 = 10;
+
      /*  String obj = obj3; Not possible because obj3 is a Object class and String is a subclass of Object class. And will throw compile time error. */
      /*  String s3 = (String) obj3; This will throw ClassCastException at runtime.That's why casting doesn't convert the object from Integer to String. 
                                     It only tells Java, "treat this reference as a String" — and Java checks whether the actual object really is a String.*/
