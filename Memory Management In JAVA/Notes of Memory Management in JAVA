@@ -1,0 +1,1640 @@
+Java Memory Management — Final Revision Notes
+1. First understand the big picture
+
+When a Java program runs, the JVM manages memory for different purposes.
+
+For your course, remember these 4 main JVM memory areas:
+
+Memory Area	Main Purpose
+Method Area	Class information, method information/code, type information, static/class-level information
+Heap	Objects and their instance variables
+Stack	Method calls, stack frames, parameters, local variables and local references
+PC Register	Keeps track of the current instruction being executed
+Easy memory trick
+
+Method Area = Class information
+Heap = Objects
+Stack = Method execution
+PC = Current instruction
+
+2. Method Area
+
+The Method Area contains information related to classes.
+
+For example:
+
+class Student {
+
+    int age;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+Conceptually, the Method Area contains information such as:
+
+Student class
+│
+├── Field: age
+│   └── Type: int
+│
+└── Method: display()
+    └── Method code
+
+So the Method Area knows:
+
+There is a class called Student
+It has a field called age
+age has type int
+It has a method called display()
+Information/code associated with display() exists
+Important
+
+The method code does NOT move into the Stack when the method is called.
+
+The method code remains associated with the class.
+
+The Stack only gets a stack frame for that particular execution.
+
+3. Heap
+
+The Heap is mainly where objects are created.
+
+Whenever you use:
+
+new
+
+you normally create an object on the Heap.
+
+Example:
+
+Student s = new Student();
+
+Conceptually:
+
+STACK                         HEAP
+
+s ────────────────────────→  Student object
+                              age = 20
+
+Here:
+
+s → reference variable
+Student object → actual object
+age = 20 → instance variable/value inside that object
+4. Stack
+
+The Stack is used for method execution.
+
+Whenever a method is called, a stack frame is created for that particular method call.
+
+Example:
+
+void display(int marks) {
+
+    int x = 50;
+
+}
+
+When display(90) is called:
+
+STACK
+
+display() frame
+----------------
+marks = 90
+x = 50
+----------------
+
+When the method finishes, that frame is removed.
+
+Important
+
+A stack frame belongs to one particular method invocation.
+
+For example:
+
+display(90);
+display(80);
+
+The same method code is used twice, but there are separate executions/frames.
+
+Conceptually:
+
+METHOD AREA
+    display() method code
+          ↓
+     same code reused
+
+STACK
+    display(90) frame
+
+STACK
+    display(80) frame
+5. PC Register
+
+PC means Program Counter.
+
+It keeps track of which instruction is currently being executed by a thread.
+
+Very simplified:
+
+PC Register
+     ↓
+Current instruction
+
+You normally don't directly work with the PC Register in Java programs.
+
+For exams:
+
+PC Register stores/keeps track of the address or location of the current instruction being executed.
+
+6. What is a variable?
+
+A variable is a named storage location used to hold a value or reference.
+
+Example:
+
+int age = 20;
+
+Here:
+
+age → variable name
+int → declared type
+20  → actual value
+
+Don't imagine these as three separate objects.
+
+Conceptually:
+
+age : int = 20
+7. Where is the type of a variable stored?
+
+This was one of your important doubts.
+
+Consider:
+
+class Student {
+    int age = 20;
+}
+
+The JVM/class metadata needs to know:
+
+Student
+│
+└── age → int
+
+So, in the simplified course model:
+
+The declared type information is part of class/method metadata associated with the Method Area.
+
+But the actual value belonging to a particular object is stored with that object.
+
+METHOD AREA / CLASS METADATA
+
+Student
+└── age → int
+
+Then after:
+
+Student s = new Student();
+
+Heap conceptually contains:
+
+HEAP
+
+Student object
+└── age = 20
+Therefore
+age is int
+      ↓
+Class/type information
+      ↓
+Method Area / class metadata
+
+age = 20
+      ↓
+Actual instance value
+      ↓
+Heap
+8. Instance Variable
+
+An instance variable is a variable declared inside a class but outside methods, without static.
+
+Example:
+
+class Student {
+
+    int age = 20;
+    String name = "Shobhit";
+
+}
+
+Both are instance variables:
+
+age
+name
+Where are they stored?
+
+The actual instance fields are stored inside each object on the Heap.
+
+Example:
+
+Student s1 = new Student();
+Student s2 = new Student();
+
+Conceptually:
+
+HEAP
+
+Student object 1
+----------------
+age = 20
+name → "Shobhit"
+
+
+Student object 2
+----------------
+age = 20
+name → "Shobhit"
+
+Each object gets its own copy of instance variables.
+
+9. Why can't an instance variable exist without an object?
+
+Suppose:
+
+class Student {
+
+    int age = 20;
+
+}
+
+The class definition tells the JVM:
+
+Every Student object should have:
+
+age : int
+
+But there is no actual instance field storage until an object is created.
+
+When:
+
+Student s = new Student();
+
+is executed:
+
+HEAP
+
+Student object
+└── age = 20
+
+So remember:
+
+Class defines the instance variable; object provides the actual instance storage.
+
+10. Static Variable
+
+A static variable belongs to the class, not to individual objects.
+
+Example:
+
+class Student {
+
+    static int count = 10;
+
+}
+
+There is only one shared count for the class.
+
+Conceptually:
+
+METHOD AREA / CLASS-LEVEL STORAGE
+
+Student
+└── static count = 10
+
+If we create:
+
+Student s1 = new Student();
+Student s2 = new Student();
+
+we don't get:
+
+s1 → count
+s2 → count
+
+as separate copies.
+
+Instead:
+
+             Student class
+                  │
+                  ↓
+           static count = 10
+             ↗          ↖
+           s1            s2
+
+Both objects/classes access the same static variable.
+
+Exam-level answer
+
+Static variables are class-level variables and are commonly taught as being stored in the Method Area.
+
+Technical note: Modern JVM implementations are more nuanced about the exact physical placement, but the above is the standard simplified model used for learning JVM memory.
+
+11. Local Variable
+
+A local variable is declared inside a method/block.
+
+Example:
+
+void display() {
+
+    int x = 50;
+
+}
+
+x is a local variable.
+
+When display() runs:
+
+STACK
+
+display() frame
+----------------
+x = 50
+----------------
+
+So:
+
+Local variable → Stack frame
+
+When the method finishes:
+
+display() frame
+
+is removed, so its local variables are no longer part of that active frame.
+
+12. Parameter
+
+A parameter is a variable declared in the method definition.
+
+Example:
+
+void display(int marks) {
+
+}
+
+marks is a parameter.
+
+When:
+
+s.display(90);
+
+is called:
+
+STACK
+
+display() frame
+----------------
+marks = 90
+----------------
+
+So, at the course level:
+
+Parameter → Stack frame
+
+13. Local Reference Variable
+
+This is where an important distinction comes in.
+
+Consider:
+
+Student s = new Student();
+
+Here s is a reference variable, but it is also a local variable if written inside a method.
+
+Therefore:
+
+STACK
+s ──────────────→ HEAP
+                  Student object
+
+So:
+
+The local reference s is in the Stack frame, while the object it refers to is in the Heap.
+
+14. Reference Variable vs Object
+
+This was another major doubt.
+
+Consider:
+
+Student s = new Student();
+
+There are two different things:
+
+1. Reference variable
+s
+2. Object
+new Student()
+
+Conceptually:
+
+STACK                         HEAP
+
+s ─────────────────────────→ Student object
+                              age = 20
+                              name → "Shobhit"
+Never confuse them
+s ≠ object
+
+s is a reference.
+
+new Student() creates the object.
+
+15. Can we make an object of a variable?
+
+No.
+
+A variable and an object are different concepts.
+
+For example:
+
+int age = 20;
+
+age is a variable containing a primitive value.
+
+You don't create an "object of age".
+
+But:
+
+Student s = new Student();
+
+creates a Student object.
+
+The variable s refers to that object.
+
+16. What about String?
+
+Consider:
+
+String name = "Shobhit";
+
+There are two things to understand:
+
+name
+
+and
+
+"Shobhit"
+
+If name is a local variable:
+
+STACK
+
+name ─────────────→ "Shobhit" String object
+
+If name is an instance field:
+
+class Student {
+    String name = "Shobhit";
+}
+
+then:
+
+HEAP
+
+Student object
+└── name ─────→ "Shobhit" String object
+
+So the reference field is part of the object, while the String object itself is also on the Heap.
+
+String literals have additional JVM/string-pool behavior, but for basic memory management remember:
+
+String is an object/reference type, unlike int, which is primitive.
+
+17. Primitive vs Reference Variable
+Primitive
+int age = 20;
+
+Conceptually:
+
+age : int = 20
+
+There is no separate Integer object here.
+
+Reference
+String name = "Shobhit";
+
+Conceptually:
+
+name ─────→ String object
+
+So:
+
+Code	Variable	What it contains
+int x = 50;	primitive variable	primitive value
+String s = "Delhi";	reference variable	reference to object
+Student s = new Student();	reference variable	reference to Student object
+18. Instance Reference Variable
+
+Consider:
+
+class Student {
+
+    String name = "Shobhit";
+
+}
+
+name is an instance variable and its type is String.
+
+Conceptually:
+
+METHOD AREA / CLASS METADATA
+
+Student
+└── name → String
+
+After:
+
+Student s = new Student();
+
+Heap:
+
+HEAP
+
+Student object
+└── name ─────────→ "Shobhit"
+
+So:
+
+name → reference
+"Shobhit" → object
+19. Local Reference Variable
+
+Consider:
+
+void display() {
+
+    String city = "Delhi";
+
+}
+
+city is a local reference variable.
+
+During method execution:
+
+STACK
+
+display() frame
+└── city ─────────→ "Delhi"
+
+The String object is on the Heap.
+
+20. Parameter That Is a Reference
+
+Consider:
+
+void display(Student s) {
+
+}
+
+Here s is a parameter and a reference variable.
+
+When:
+
+display(studentObject);
+
+is called:
+
+STACK
+
+display() frame
+└── s ─────────→ Student object
+
+Again:
+
+Reference variable → Stack if it is a local/parameter
+Object → Heap
+
+21. Instance Method
+
+Example:
+
+class Student {
+
+    int age = 20;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+display() is an instance method because it is not static.
+
+Its method information/code is associated with the class:
+
+METHOD AREA
+
+Student
+└── display() method code
+
+When called:
+
+Student s = new Student();
+s.display();
+
+a stack frame is created:
+
+STACK
+
+display() frame
+----------------
+this ─────────→ Student object
+----------------
+
+And:
+
+HEAP
+
+Student object
+└── age = 20
+22. What is this?
+
+This is very important for instance methods.
+
+Consider:
+
+class Student {
+
+    int age = 20;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+When:
+
+s.display();
+
+runs, the method needs to know:
+
+"Which Student object's age should I use?"
+
+The answer is the current object, represented by:
+
+this
+
+Conceptually:
+
+STACK
+
+display() frame
+
+this ─────────────→ Student object
+                         │
+                         ↓
+                      age = 20
+
+Therefore:
+
+System.out.println(age);
+
+is conceptually like:
+
+System.out.println(this.age);
+23. Why does an instance method need an object?
+
+Because it can access instance variables.
+
+Example:
+
+class Student {
+
+    int age = 20;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+This is valid:
+
+Student s = new Student();
+s.display();
+
+Because:
+
+s
+ ↓
+Student object
+ ↓
+age = 20
+
+But this doesn't make sense:
+
+Student.display();
+
+because there is no particular Student object/current this.
+
+24. Static Method
+
+Example:
+
+class Student {
+
+    static void show() {
+
+        int x = 50;
+
+        System.out.println(x);
+    }
+}
+
+show() is a static method.
+
+Its method code is associated with the class:
+
+METHOD AREA
+
+Student
+└── show() method code
+
+When:
+
+Student.show();
+
+runs:
+
+STACK
+
+show() frame
+----------------
+x = 50
+----------------
+
+There is no this reference.
+
+Why?
+
+Because a static method belongs to the class and does not operate on one particular Student object.
+
+25. Static vs Instance Method
+
+This is one of the most important comparisons.
+
+	Instance Method	Static Method
+Method code	Method Area/class-level	Method Area/class-level
+Stack frame when called	Yes	Yes
+this	Yes	No
+Requires object to call normally	Yes	No
+Can directly access instance variables	Yes	No
+Can access static variables	Yes	Yes
+Example
+class Student {
+
+    int age = 20;
+    static int count = 10;
+
+    void display() {
+        System.out.println(age);
+    }
+
+    static void showCount() {
+        System.out.println(count);
+    }
+}
+
+Conceptually:
+
+METHOD AREA
+────────────────────────
+Student class
+
+age → int
+count → int (static)
+
+display() code
+showCount() code
+────────────────────────
+
+When display() runs:
+
+STACK
+display() frame
+
+this ─────→ Student object
+
+When showCount() runs:
+
+STACK
+showCount() frame
+
+NO this
+26. Why does Stack exist if methods are already in Method Area?
+
+This was one of your biggest doubts.
+
+The answer is:
+
+Method Area stores the method itself. Stack stores the execution of that method.
+
+Think of it like a recipe.
+
+Method Area
+display() recipe/code
+
+The recipe exists once.
+
+Stack
+
+When someone actually follows the recipe:
+
+display() execution
+marks = 90
+x = 50
+city = "Delhi"
+
+Each execution gets its own frame.
+
+Easy line to remember
+
+Method Area = What the method is
+Stack = What happens when the method runs
+
+27. Complete Example
+
+Now let's put everything together.
+
+class Student {
+
+    static int count = 10;
+
+    int age = 20;
+
+    String name = "Shobhit";
+
+    void display(int marks) {
+
+        int x = 50;
+
+        String city = "Delhi";
+
+        Student s2 = new Student();
+
+        System.out.println(age);
+        System.out.println(name);
+        System.out.println(marks);
+        System.out.println(x);
+        System.out.println(city);
+    }
+}
+
+class Main {
+
+    public static void main(String[] args) {
+
+        Student s = new Student();
+
+        s.display(90);
+    }
+}
+
+Let's execute it step-by-step.
+
+28. Step 1 — Class Loading
+
+The JVM loads information about Student.
+
+Conceptually:
+
+METHOD AREA / CLASS METADATA
+────────────────────────────────
+
+Student
+
+Fields:
+    count → int → static
+    age   → int
+    name  → String
+
+Methods:
+    display(int)
+
+display:
+    parameter marks → int
+    local variables:
+        x → int
+        city → String
+        s2 → Student
+
+method code / bytecode
+Important correction
+
+The actual local variables are not sitting in the Method Area waiting to be used.
+
+Their runtime values belong to the active Stack frame.
+
+Information about local variables may also appear in bytecode/debug metadata when available, but don't confuse that with the actual runtime storage.
+
+29. Step 2 — main() Starts
+
+The JVM starts executing:
+
+main(String[] args)
+
+A main() stack frame is created.
+
+Conceptually:
+
+STACK
+
+main() frame
+-----------------------
+args → String[] object
+-----------------------
+
+The args reference points to an array object on the Heap.
+
+30. Step 3 — Create Student Object
+
+This line executes:
+
+Student s = new Student();
+
+First:
+
+new Student()
+
+creates an object on the Heap.
+
+Conceptually:
+
+HEAP
+
+Student object
+----------------
+count → shared/static
+age = 20
+name ─────→ "Shobhit"
+----------------
+
+But remember:
+
+count is static, so don't think of it as a separate copy inside every Student object. The simplified model places its shared class-level storage separately.
+
+Then:
+
+s
+
+is the local reference in the main() frame.
+
+So:
+
+STACK                         HEAP
+
+main() frame
+
+s ─────────────────────────→ Student object
+                              age = 20
+                              name ───→ "Shobhit"
+31. Step 4 — Call display(90)
+
+This executes:
+
+s.display(90);
+
+The JVM starts executing the method.
+
+A new stack frame is created:
+
+STACK
+
+display() frame
+------------------------
+this ─────→ Student object
+marks = 90
+------------------------
+
+main() frame
+------------------------
+s ────────→ Student object
+------------------------
+
+Notice something important:
+
+Both:
+
+this
+
+and:
+
+s
+
+refer to the same Student object.
+
+32. Step 5 — Local Variable x
+
+Inside display():
+
+int x = 50;
+
+x is local.
+
+So:
+
+STACK
+
+display() frame
+------------------------
+this ─────→ Student object
+marks = 90
+x = 50
+------------------------
+
+The value 50 is part of the local variable's runtime storage in the frame.
+
+33. Step 6 — Local String Reference
+
+Next:
+
+String city = "Delhi";
+
+city is a local reference variable.
+
+Conceptually:
+
+STACK
+
+display() frame
+------------------------
+this ─────→ Student object
+marks = 90
+x = 50
+city ─────→ "Delhi"
+------------------------
+
+The String object is on the Heap/string pool.
+
+34. Step 7 — Create Another Student
+
+Next:
+
+Student s2 = new Student();
+
+A second Student object is created.
+
+STACK
+
+display() frame
+------------------------
+this ─────→ Student object 1
+marks = 90
+x = 50
+city ─────→ "Delhi"
+s2 ──────→ Student object 2
+------------------------
+
+Heap:
+
+HEAP
+
+Student object 1
+----------------
+age = 20
+name ───→ "Shobhit"
+----------------
+
+
+Student object 2
+----------------
+age = 20
+name ───→ "Shobhit"
+----------------
+
+Each Student object has its own instance fields.
+
+35. Complete Memory Diagram
+
+At this point, conceptually:
+
+                     JVM MEMORY
+                         │
+       ┌─────────────────┼──────────────────┐
+       │                 │                  │
+       ↓                 ↓                  ↓
+ METHOD AREA           HEAP               STACK
+       │                 │                  │
+       │                 │                  │
+ Student class       Student object 1    display() frame
+       │                 │                  │
+       ├─ age → int      ├─ age = 20        ├─ this ────────┐
+       │                 │                  ├─ marks = 90   │
+       ├─ name → String  ├─ name ──────┐   ├─ x = 50       │
+       │                 │              │   ├─ city ─────┐ │
+       ├─ count → int    │              │   └─ s2 ─────┐│ │
+       │   static        │              │              ││ │
+       │                 │              ↓              ││ │
+       ├─ display()      │          "Shobhit"           ││ │
+       │   code          │                              ││ │
+       │                 │                              ↓↓ ↓
+       │                 ├─ age = 20               HEAP objects
+       │                 └─ name ─────────────→ "Shobhit"
+       │
+       │
+       └── class metadata
+
+
+                     STACK
+                       │
+                       ↓
+                  main() frame
+                       │
+                       └── s ───────────────→ Student object 1
+
+
+                     PC REGISTER
+                          │
+                          ↓
+                   current instruction
+36. Where Does Every Variable Go?
+
+This is the table you should memorize.
+
+Variable type	Example	Runtime storage
+Instance variable primitive	int age = 20;	Heap, inside object
+Instance variable reference	String name = "Shobhit";	Heap, inside object
+Static variable	static int count = 10;	Class-level/static storage; simplified as Method Area
+Local primitive	int x = 50;	Stack frame
+Local reference	String city = "Delhi";	Stack frame
+Parameter primitive	int marks	Stack frame
+Parameter reference	Student s	Stack frame
+Object	new Student()	Heap
+Method code	display()	Method Area/class-level runtime data
+Current instruction	currently executing instruction	PC Register
+37. Where Does the Reference Variable Go?
+
+It depends on what kind of variable it is.
+
+Local reference
+Student s = new Student();
+STACK
+s ─────→ HEAP
+Instance reference
+class Student {
+    String name;
+}
+HEAP
+
+Student object
+└── name ─────→ String object
+Parameter reference
+void display(Student s)
+STACK
+
+display() frame
+└── s ─────→ Student object
+Static reference
+static Student s;
+
+It belongs to class-level/static storage.
+
+38. One Very Important Rule
+
+Don't say:
+
+"The variable is always in Stack."
+
+That is wrong.
+
+Because variables can be:
+
+Instance variable → Heap
+Static variable   → Class-level storage
+Local variable    → Stack
+Parameter         → Stack
+39. One Very Important Rule About Objects
+
+Don't say:
+
+"Reference variable and object are stored in the same place."
+
+Usually, for a local reference:
+
+Student s = new Student();
+
+they are conceptually in different places:
+
+STACK                         HEAP
+
+s ─────────────────────────→ Student object
+
+The reference is in the Stack.
+
+The object is in the Heap.
+
+40. One Very Important Rule About Methods
+
+Don't say:
+
+"When a method is called, the method moves from Method Area to Stack."
+
+That's incorrect.
+
+Instead:
+
+METHOD AREA
+display() method code
+       │
+       │ called
+       ↓
+STACK
+display() stack frame
+
+The code remains class-level.
+
+The Stack gets a new execution frame.
+
+41. Instance Method vs Static Method — Memory Diagram
+Instance method
+void display() {
+    int x = 50;
+}
+
+When called:
+
+METHOD AREA
+      │
+      ↓
+display() code
+      │
+      ↓
+STACK
+display() frame
+----------------
+this → Student object
+x = 50
+----------------
+      │
+      ↓
+HEAP
+Student object
+Static method
+static void show() {
+    int x = 50;
+}
+
+When called:
+
+METHOD AREA
+      │
+      ↓
+show() code
+      │
+      ↓
+STACK
+show() frame
+----------------
+x = 50
+----------------
+
+No:
+
+this
+
+because no particular Student object is required.
+
+42. Why Can an Instance Method Access an Instance Variable?
+
+Example:
+
+class Student {
+
+    int age = 20;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+When:
+
+Student s = new Student();
+s.display();
+
+runs:
+
+STACK
+
+display() frame
+    this
+      │
+      ↓
+HEAP
+
+Student object
+    age = 20
+
+Inside the method:
+
+age
+
+is conceptually:
+
+this.age
+
+Therefore the JVM knows which object's age to access.
+
+43. What Happens If There Is No Student Object?
+
+Suppose:
+
+class Student {
+
+    int age = 20;
+
+    void display() {
+        System.out.println(age);
+    }
+}
+
+Before:
+
+new Student();
+
+there is no actual Student object.
+
+Therefore there is no actual:
+
+age = 20
+
+instance field belonging to an object.
+
+But class metadata still knows:
+
+Student
+└── age → int
+
+After:
+
+Student s = new Student();
+
+the actual field exists inside the newly created object:
+
+HEAP
+
+Student object
+└── age = 20
+44. What Does age = 20 Really Mean?
+
+Consider:
+
+class Student {
+    int age = 20;
+}
+
+Don't think:
+
+age → one object
+int → another object
+20 → another object
+
+Instead think:
+
+Student object
+
+age : int = 20
+
+The class definition tells us:
+
+age has type int
+
+The object contains:
+
+age's current value = 20
+45. Two Objects Can Have Different Values
+
+Example:
+
+Student s1 = new Student();
+Student s2 = new Student();
+
+s1.age = 20;
+s2.age = 25;
+
+Heap:
+
+Student object 1
+----------------
+age = 20
+
+
+Student object 2
+----------------
+age = 25
+
+But class metadata still says:
+
+Student
+└── age → int
+
+So:
+
+Type definition is common; instance value belongs to each object.
+
+This is a very important concept.
+
+46. Method Parameters and Local Variables
+
+Example:
+
+void display(int marks) {
+
+    int x = 50;
+    String city = "Delhi";
+
+}
+
+Class/method metadata conceptually knows:
+
+display(int)
+
+and bytecode contains the instructions needed to execute the method.
+
+When the method executes:
+
+STACK
+
+display() frame
+--------------------------
+marks = 90
+x = 50
+city ─────→ "Delhi"
+--------------------------
+
+Therefore:
+
+Method metadata/code
+METHOD AREA
+Actual runtime values
+STACK
+47. Complete Classification
+A. Class-level information
+Student class
+field definitions
+method definitions
+type information
+method code
+
+→ Method Area / class metadata
+
+B. Objects
+new Student()
+new String(...)
+new Student()
+
+→ Heap
+
+C. Instance variables
+int age;
+String name;
+
+Actual values → inside objects on Heap
+
+D. Static variables
+static int count;
+
+→ class-level/static storage
+
+Simplified course model:
+
+Method Area
+E. Local variables
+int x;
+String city;
+Student s;
+
+→ Stack frame
+
+F. Parameters
+void display(int marks)
+
+Actual parameter for a call → Stack frame
+
+G. this
+
+Instance method:
+
+void display()
+
+→ implicit reference to current object, conceptually in the Stack frame
+
+H. Current instruction
+
+→ PC Register
+
+48. The Most Important Diagram to Memorize
+                    JVM
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+        ↓            ↓            ↓
+ METHOD AREA       HEAP         STACK
+        │            │            │
+        │            │            │
+ Class information  Objects      Method execution
+        │            │            │
+        │            ├─ Instance  ├─ Parameters
+        │            │  variables ├─ Local variables
+        │            │             ├─ Local references
+        │            │             └─ this
+        │
+        ├─ Class metadata
+        ├─ Type information
+        ├─ Method information/code
+        └─ Static/class-level information
+
+
+                     PC REGISTER
+                          │
+                          ↓
+                Current instruction
+49. The Best Mental Model
+
+Whenever you see Java code, ask four questions.
+
+Question 1: Is this class information?
+
+Example:
+
+Student
+int age
+String name
+void display()
+
+Think:
+
+METHOD AREA / CLASS METADATA
+Question 2: Is this an object?
+
+Example:
+
+new Student()
+
+Think:
+
+HEAP
+Question 3: Is this related to one particular method call?
+
+Example:
+
+int x = 50;
+int marks = 90;
+String city = "Delhi";
+
+Think:
+
+STACK FRAME
+Question 4: Which instruction is currently executing?
+
+Think:
+
+PC REGISTER
+50. Super-Short Revision Table
+Thing	Where?	Why?
+Class information	Method Area	Class-level information
+Method code	Method Area	Belongs to class
+Type information	Class metadata / Method Area*	Describes fields/methods
+Static variable	Class-level storage / Method Area*	Shared by class
+Object	Heap	Objects are dynamically created
+Instance variable	Heap	Belongs to object
+Local variable	Stack	Belongs to method execution
+Parameter	Stack	Belongs to method execution
+Local reference	Stack	Local variable
+Instance reference field	Heap	Field inside object
+this	Stack frame conceptually	Refers to current object
+Current instruction	PC Register	Tracks execution
+
+*Simplified JVM/course model.
+
+51. Final Exam Rules ⭐
+
+Memorize these 10 lines:
+
+Objects → Heap
+Instance variables → Heap, inside objects
+Local variables → Stack
+Method parameters → Stack frame
+Local reference → Stack
+Referenced object → Heap
+Method code → Method Area/class-level runtime data
+Static variable → class-level/shared storage; commonly taught as Method Area
+Instance method has this; static method doesn't
+PC Register tracks the current instruction
+And the most important distinction:
+
+Method Area stores the method's class-level information/code. Stack stores the execution of that method. Heap stores the objects being operated on.
