@@ -1,0 +1,574 @@
+1. What is the Stack?
+
+The Stack is the memory area used while methods are executing.
+
+Whenever a method is called, JVM creates a stack frame for that method.
+
+For example:
+
+class Demo {
+    static void m1() {
+        int x = 10;
+    }
+
+    public static void main(String[] args) {
+        m1();
+    }
+}
+
+When the program starts:
+
+STACK
+┌─────────────────┐
+│    main()       │
+│                 │
+└─────────────────┘
+
+A frame for main() is created.
+
+2. Then main() calls m1()
+
+This line:
+
+m1();
+
+means:
+
+"Execute the m1() method."
+
+JVM creates another stack frame for m1().
+
+Now:
+
+STACK
+┌─────────────────┐
+│     m1()        │
+│                 │
+├─────────────────┤
+│     main()      │
+│                 │
+└─────────────────┘
+
+This is what the image is showing.
+
+The important idea is:
+
+Every active method call gets its own stack frame.
+
+3. Why is m1() above main()?
+
+Because main() called m1().
+
+Think of it like this:
+
+main()
+   ↓
+ calls m1()
+   ↓
+m1() starts executing
+
+So main() is still active, but it is waiting for m1() to finish.
+
+Therefore:
+
+TOP
+┌──────────────┐
+│    m1()      │ ← currently executing
+├──────────────┤
+│    main()    │ ← waiting
+└──────────────┘
+BOTTOM
+
+This follows LIFO:
+
+Last In, First Out
+
+The last method frame added (m1) is the first one removed.
+
+4. What is a Stack Frame?
+
+A stack frame is a memory area created for one particular method invocation.
+
+For example:
+
+m1();
+
+creates one m1() frame.
+
+If:
+
+m1();
+m1();
+
+is executed sequentially, each call gets its own execution frame.
+
+A frame can contain information such as:
+
+Stack Frame
+│
+├── Parameters
+├── Local variables
+├── Local reference variables
+├── this (for instance methods)
+├── Intermediate execution information
+└── Return information/address
+5. Local Variables
+
+The image says:
+
+Local variables
+
+Example:
+
+static void m1() {
+
+    int x = 10;
+    int y = 20;
+
+}
+
+When m1() is executing:
+
+STACK
+
+m1() frame
+----------------
+x = 10
+y = 20
+----------------
+
+These are local variables because they are declared inside m1().
+
+So remember:
+
+Local variable → Stack frame
+
+6. Method Parameters
+
+The image also says:
+
+Method Params
+
+Example:
+
+static void m1(int x, int y) {
+
+}
+
+Suppose:
+
+m1(10, 20);
+
+When m1() executes:
+
+STACK
+
+m1() frame
+----------------
+x = 10
+y = 20
+----------------
+
+So:
+
+Method parameters are associated with the stack frame of that method invocation.
+
+7. Reference Variables
+
+The image also mentions:
+
+Reference variables
+
+This is important because you previously had a doubt about reference variables.
+
+Consider:
+
+static void m1() {
+
+    Student s = new Student();
+
+}
+
+Here:
+
+s
+
+is a local reference variable.
+
+Conceptually:
+
+STACK                         HEAP
+
+m1() frame
+
+s ─────────────────────────→ Student object
+
+So don't confuse:
+
+s
+
+with:
+
+new Student()
+s
+
+is the reference variable.
+
+new Student()
+
+creates the object.
+
+Therefore:
+
+Local reference → Stack frame
+Object → Heap
+
+8. What is the Return Address?
+
+This is the part you are seeing at the bottom of the image:
+
+Return address
+
+This is basically information that allows execution to know:
+
+"After this method finishes, where should I continue execution?"
+
+Consider:
+
+public static void main(String[] args) {
+
+    System.out.println("A");
+
+    m1();
+
+    System.out.println("C");
+}
+
+static void m1() {
+
+    System.out.println("B");
+}
+
+Execution:
+
+main()
+  ↓
+print A
+  ↓
+call m1()
+  ↓
+m1()
+  ↓
+print B
+  ↓
+m1() finishes
+  ↓
+return to main()
+  ↓
+print C
+
+Output:
+
+A
+B
+C
+
+When m1() was called, JVM needs to remember where execution should continue after m1() finishes.
+
+Conceptually:
+
+main()
+
+System.out.println("A");
+
+m1();       ← call
+
+System.out.println("C");  ← continue here
+
+So the stack frame contains return-related information.
+
+9. Now Understand the Drawing
+
+Your image basically represents this situation:
+
+public static void main(String[] args) {
+
+    m1();
+
+}
+
+static void m1() {
+
+    // code
+}
+
+Initially:
+
+STACK
+
+┌─────────────────────┐
+│       main()        │
+└─────────────────────┘
+
+Then main() calls m1():
+
+STACK
+
+┌─────────────────────┐
+│        m1()         │
+│                     │
+│ local variables     │
+│ parameters          │
+│ references           │
+│ return information  │
+├─────────────────────┤
+│       main()        │
+│                     │
+└─────────────────────┘
+
+This is the key idea in the image.
+
+10. What happens when m1() finishes?
+
+Suppose:
+
+static void m1() {
+
+    int x = 10;
+
+}
+
+When m1() finishes, its stack frame is removed.
+
+Before:
+
+STACK
+
+┌──────────────────┐
+│      m1()        │
+│      x = 10      │
+├──────────────────┤
+│      main()      │
+└──────────────────┘
+
+After m1() finishes:
+
+STACK
+
+┌──────────────────┐
+│      main()      │
+└──────────────────┘
+
+The m1() frame no longer exists as an active stack frame.
+
+This is why local variables have method-call lifetime.
+
+11. What if m1() calls another method?
+
+For example:
+
+main()
+  ↓
+m1()
+  ↓
+m2()
+
+Stack becomes:
+
+STACK
+
+┌──────────────────┐
+│      m2()        │ ← currently executing
+├──────────────────┤
+│      m1()        │
+├──────────────────┤
+│      main()      │
+└──────────────────┘
+
+If m2() finishes:
+
+STACK
+
+┌──────────────────┐
+│      m1()        │ ← continues
+├──────────────────┤
+│      main()      │
+└──────────────────┘
+
+Then m1() finishes:
+
+STACK
+
+┌──────────────────┐
+│      main()      │
+└──────────────────┘
+
+This is exactly why Stack follows LIFO.
+
+12. Very Important: Method Area vs Stack
+
+This connects directly to your previous doubts.
+
+Suppose:
+
+static void m1(int marks) {
+
+    int x = 50;
+
+}
+
+There are two different things:
+
+Method itself
+m1() method code
+
+→ associated with Method Area/class-level runtime information
+
+Execution of m1()
+marks = 90
+x = 50
+
+→ Stack frame
+
+So:
+
+METHOD AREA
+────────────────────
+m1() method code
+────────────────────
+          │
+          │ called
+          ↓
+STACK
+────────────────────
+m1() frame
+
+marks = 90
+x = 50
+return information
+────────────────────
+Remember this sentence:
+
+Method Area stores the method; Stack stores the method's current execution.
+
+13. Instance Method Adds this
+
+Now suppose:
+
+class Student {
+
+    int age = 20;
+
+    void display(int marks) {
+
+        int x = 50;
+
+    }
+}
+
+Call:
+
+Student s = new Student();
+s.display(90);
+
+Stack:
+
+STACK
+
+display() frame
+-------------------------
+this ───────→ Student object
+marks = 90
+x = 50
+return information
+-------------------------
+
+main() frame
+-------------------------
+s ──────────→ Student object
+-------------------------
+
+Heap:
+
+HEAP
+
+Student object
+----------------
+age = 20
+----------------
+
+So an instance method has the implicit this reference.
+
+A static method doesn't.
+
+14. Your Image's Four Important Points
+
+The left side of your image lists:
+
+① Local variables
+int x = 10;
+
+→ Stack frame
+
+② Method parameters
+void m1(int x)
+
+→ Stack frame
+
+③ Reference variables
+Student s = new Student();
+
+If s is local:
+
+s → Stack
+object → Heap
+④ Return address
+
+Information used to resume execution after the called method returns.
+
+15. Final Diagram You Should Remember
+                    JVM
+                     │
+       ┌─────────────┼─────────────┐
+       │             │             │
+       ↓             ↓             ↓
+ METHOD AREA       HEAP          STACK
+       │             │             │
+       │             │             │
+ method code      objects      stack frames
+ class info       instance     │
+ type info        fields       ├─ parameters
+ static info      String       ├─ local variables
+                               ├─ local references
+                               ├─ this
+                               └─ return information
+
+
+Example:
+
+METHOD AREA
+┌───────────────────────┐
+│ m1() method code      │
+└───────────┬───────────┘
+            │
+            ↓
+STACK
+┌───────────────────────┐
+│ m1() frame            │
+│ marks = 90            │
+│ x = 50                │
+│ s ────────────────┐   │
+│ return information│   │
+├───────────────────│───┤
+│ main() frame      │   │
+└───────────────────│───┘
+                    │
+                    ↓
+HEAP
+┌───────────────────────┐
+│ Student object        │
+│ age = 20              │
+└───────────────────────┘
+⭐ One-line revision
+
+Stack = each method call gets a frame containing its local execution information such as parameters, local variables, references, this (for instance methods), and return-related information.
