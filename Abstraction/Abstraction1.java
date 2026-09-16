@@ -26,6 +26,7 @@ public class Abstraction1 {
         manualCar2.noise();
     }
 }
+
 /*
 
 An abstract method can be:
