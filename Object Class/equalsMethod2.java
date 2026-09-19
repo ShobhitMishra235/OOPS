@@ -26,6 +26,20 @@ class Students {
 
     @Override 
     public boolean equals(Object obj) {
+
+        if(this == obj) {
+            return true;
+        }
+
+    // If Object is null and accessing its fields may give NullPointerException.
+        if(obj == null) {
+            return false;
+        }
+
+    // Check if both classes are of type Student. If not checked we will get ClassCastException.
+        if(obj.getClass() != this.getClass()) {
+            return false;
+        }
         Students s = (Students) obj;
         return (this.name == s.name && this.age == s.age);
     }
