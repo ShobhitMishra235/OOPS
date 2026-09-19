@@ -1,7 +1,5 @@
-// Return an integer(HexaDecimal format) of an object 
-
 import java.util.*;
-public class HashCodeMethod {
+public class getClassMethod {
     public static void main(String[] args) {
 
         Students s1 = new Students();
@@ -17,7 +15,8 @@ public class HashCodeMethod {
         System.out.println(s1.equals(s2));
 
         System.out.println(s1.hashCode() == s2.hashCode());
-    }
+
+        System.out.println(s1.getClass().getName());
 }
 
 class Students {
@@ -54,26 +53,3 @@ class Students {
         return Objects.hash(name, age);
     }
 }
-/*
-
-If 2 objects are equal, then their hashcodes must be equal. But the reverse may not be true.
-
-With the default equals():
-
-equals true
-↓
-same object
-↓
-same hashCode
-
-With an overridden equals():
-
-equals true
-↓
-objects considered equal by your rule
-↓
-hashCode must be equal
-
-Therefore, when we override equals(), we should also override hashCode() using the same fields used in equals().
-
-*/
